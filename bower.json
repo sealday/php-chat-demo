@@ -1,0 +1,19 @@
+{
+  "name": "other-socket-demo",
+  "version": "0.0.0",
+  "authors": [
+    "sealday <sealday@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~1.11",
+    "vue": "~0.12.16"
+  }
+}

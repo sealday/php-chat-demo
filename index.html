@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<div class="container">
+    <div id="notice">
+        <h2>请先连接</h2>
+        <form id="connect_form">
+            <label>告诉我你的名字：</label>
+            <input id="username">
+            <button id="connect">连接</button>
+        </form>
+    </div>
+    <div>
+        <div id="log"></div>
+        <form id="send_form">
+            <label>发送给：</label>
+            <input type="text" id="to">
+            <label>内容是：</label>
+            <input type="text" id="content">
+            <button id="send">发送</button>
+        </form>
+    </div>
+</div>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script>
+    var log_div = $("#log");
+
+    if (!console) {
+        console = {
+            log: function(){}
+        };
+    }
+
+    $("#connect").click(function(){
+        $("#notice").hide();
+
+        var ws = new WebSocket('ws://211.87.226.143:5000/');
+        ws.onopen = function(e) {
+            // 当连接上的时候告诉 服务器你是谁
+            ws.send(JSON.stringify({
+                command: "user",
+                username: $("#username").val()
+            }));
+            alert("连接成功了!");
+        };
+        ws.onclose = function(e) {
+            alert("连接断开了！");
+        };
+
+        ws.onmessage = function(e) {
+            console.log(e.data);
+//            log(e.data);
+            var obj = JSON.parse(e.data);
+            log("from: " + obj.from + " " + obj.content);
+
+        };
+
+        ws.onerror = function(e) {
+            alert("出错了，查看终端看看怎么了");
+            console.log(e);
+        };
+
+        $("#send").click(function(e){
+            var to = $("#to");
+            var content = $("#content");
+            send(to.val(), content.val());
+            content.val('');
+            console.log('click');
+        });
+
+        $("#send_form").submit(function(e) {
+            e.preventDefault();
+            console.log('submit');
+        });
+
+        function send(to, content) {
+            ws.send(JSON.stringify({
+                command: "message",
+                to: to,
+                content: content
+            }));
+
+            log("self: " + "  " + content);
+        }
+    });
+
+    function log(msg) {
+        log_div[0].innerHTML += "<br>" + msg;
+    }
+
+    $("#connect_form").submit(function(e) {
+        e.preventDefault();
+    });
+</script>
+</body>
+</html>
